@@ -1,4 +1,4 @@
-from flask import Flask,request
+from flask import Flask, request
 from flask_restful import Resource, Api
 
 app = Flask(__name__)
@@ -10,13 +10,14 @@ items = []
 
 class Item(Resource):
     def get(self, name):
-        item = next(list(filter(lambda x:x['name'] == name, items)), None) # get us the first item that found by this filter
+        item = next(list(filter(lambda x: x['name'] == name, items)),
+                    None)  # get us the first item that found by this filter
         return {'item': None}, 200 if item else 404
 
     def post(self, name):
-        if next(filter(lambda x:x['name'] == name, items), None):
+        if next(filter(lambda x: x['name'] == name, items), None):
             return {'message': "An item with name '{}' already exists.".format(name)}, 400
-            
+
         data = request.get_json()
         item = {'name': name, 'price': data['price']}
         items.append(item)
@@ -25,11 +26,10 @@ class Item(Resource):
 
 class ItemList(Resource):
     def get(self):
-        return {'items':items}
+        return {'items': items}
 
 
 api.add_resource(Item, '/item/<string:name>')
 api.add_resource(ItemList, '/items')
-
 
 app.run(port=5000, debug=True)
